@@ -169,3 +169,10 @@ test('override cap is the same for share links and editor validation', () => {
   assert.equal(parseScenario(q('pWh=' + calc.OVERRIDE_MAX)).overrides.promptWh, calc.OVERRIDE_MAX);
   assert.equal(parseScenario(q('pWh=' + (calc.OVERRIDE_MAX + 1))).overrides.promptWh, null);
 });
+
+
+test('script URLs are versioned to avoid stale incompatible cached calculator', () => {
+ const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+ assert.ok(html.includes('src="src/calculator.js?v=' + bench.schema_version + '"'));
+ assert.ok(html.includes('src="data/benchmarks.js?v=' + bench.schema_version + '"'));
+});
