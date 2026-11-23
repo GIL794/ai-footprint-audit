@@ -24,7 +24,7 @@
   };
   var DEFAULTS = { promptsPerDay: 25, burgersPerWeek: 2, streamingHoursPerDay: 1.5 };
 
-  function r(n, d) { return Number(Number(n).toFixed(d)); }
+  function r(n, d) { return Number(Number(n).toPrecision(12)); }
   function share(part, total) { return total > 0 ? r((part / total) * 100, 3) : 0; }
 
   function computeFootprint(o) {
@@ -82,7 +82,7 @@
         burgersSharePct: share(burgerCarbonKg, totalCarbonKg)
       },
       equivalents: {
-        streamingHoursForYearAiEnergy: streamingWhPerHr > 0 ? r((aiEnergyKwh * 1000) / streamingWhPerHr, 2) : 0
+        streamingHoursForYearAiEnergy: streamingWhPerHr > 0 ? r((aiEnergyKwh * 1000) / streamingWhPerHr, 2) : null
       }
     };
   }
@@ -182,7 +182,7 @@
   }
 
   var api = {
-    LIMITS: LIMITS, TABS: TABS, DEFAULTS: DEFAULTS,
+    OVERRIDE_MAX: OVERRIDE_MAX, LIMITS: LIMITS, TABS: TABS, DEFAULTS: DEFAULTS,
     computeFootprint: computeFootprint, parseScenario: parseScenario,
     scenarioToParams: scenarioToParams, effectiveConstants: effectiveConstants,
     hasOverrides: hasOverrides, buildInputs: buildInputs
