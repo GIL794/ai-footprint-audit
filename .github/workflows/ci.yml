@@ -13,6 +13,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Validate JSON schema & run unit tests
-        run: node --test tests/calculator.test.js
+        run: npm test
