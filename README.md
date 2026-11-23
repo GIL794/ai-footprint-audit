@@ -14,7 +14,7 @@ Live page: https://gil794.github.io/ai-footprint-audit/
 - Every constant lives in `data/benchmarks.json` with a source, a link, a scope and a **check status** (checked, derived, partly checked, not yet checked, or the author's estimate). The calculator uses those benchmark values; formatting and UI limits are in code.
 - `data/benchmarks.js` is generated from the JSON (`npm run build`) so the page also works when `index.html` is opened straight from disk. A test fails if the two drift apart.
 - Figures that have not been checked against a primary source are labelled on the page and in the table. See `CHANGELOG.md` for what was removed or changed and why.
-- Water: the Google estimate counts data centre cooling water only (a lower bound); the older estimate includes power-plant water. AI water is never compared with burger water, because they are different kinds of water. Video water is not estimated.
+- Water: the Google estimate counts data centre cooling water only (not a minimum for other requests); the older estimate includes power-plant water. AI water is never compared with burger water, because they are different kinds of water. Video water is not estimated.
 
 ## Run it
 Open `index.html` directly, or serve it:

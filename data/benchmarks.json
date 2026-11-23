@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3.1",
+  "schema_version": "1.3.2",
   "last_updated": "2026-11-23",
   "license": "CC-BY-4.0",
   "status_key": {
@@ -13,14 +13,14 @@
     "modern": {
       "label": "Google Gemini text prompt (Google's 2025 measurement)",
       "short_label": "Google Gemini, 2025",
-      "description": "Google's own measurement of one median text prompt on its Gemini Apps in May 2025. It counts the data centre's electricity and on-site cooling water. It leaves out your device, the network, model training and the water used at power plants, so the water figure is a lower bound. Other chatbots, image or video requests and long, multi-step requests are not covered.",
+      "description": "Google's own reported figures for the median text prompt on its Gemini Apps in May 2025 (company-authored, not independently verified). The energy is measured; the water is worked out from that energy and the previous year's fleet-wide water-use rate, not metered per prompt. It counts the data centre's electricity and on-site cooling water. It leaves out your device, the network, model training and the water used at power plants, so the water figure counts on-site cooling only and is not a minimum for any other request. Other chatbots, image or video requests and long, multi-step requests are not covered.",
       "prompt_wh": 0.24,
       "prompt_wh_status": "verified",
       "prompt_wh_source": "Google, 'Measuring the environmental impact of delivering AI at Google Scale' (2025), median Gemini Apps text prompt",
       "prompt_wh_source_url": "https://arxiv.org/abs/2508.15734",
       "prompt_water_ml": 0.26,
       "prompt_water_status": "verified",
-      "prompt_water_source": "Same Google paper: on-site data centre water consumption, median Gemini Apps text prompt",
+      "prompt_water_source": "Same Google paper, sections 3.3 and 3.4: derived from the energy per prompt times the previous calendar year's fleet-wide cooling water-use rate (1.15 L/kWh), not metered per prompt; median Gemini Apps text prompt (prompt-weighted median across model-level averages)",
       "prompt_water_source_url": "https://arxiv.org/abs/2508.15734",
       "prompt_water_includes_power_plant_water": false
     },
@@ -34,7 +34,7 @@
       "prompt_wh_source_url": "https://iea.blob.core.windows.net/assets/6b2fd954-2017-408e-bf08-952fdd62118a/Electricity2024-Analysisandforecastto2026.pdf",
       "prompt_water_ml": 10.0,
       "prompt_water_status": "derived",
-      "prompt_water_source": "Li, Yang, Islam and Ren, 'Making AI Less Thirsty': about 500 mL per 10 to 50 GPT-3 responses, so 10 mL is the low end (500 / 50). Includes power-plant water.",
+      "prompt_water_source": "Li, Yang, Islam and Ren, 'Making AI Less Thirsty': about 500 mL per 10 to 50 GPT-3 responses, so 10 mL is the low end of that rounded summary (500 / 50), not a minimum across all places: the article's own table lists lower local values (for example about 7 mL for Ireland). The energy figure (IEA, 2.9 Wh) is a different source, so this is a mixed-source scenario. Includes power-plant water.",
       "prompt_water_source_url": "https://cacm.acm.org/sustainability-and-computing/making-ai-less-thirsty/",
       "prompt_water_includes_power_plant_water": true
     }
@@ -82,7 +82,7 @@
       "value": 458,
       "unit": "g CO2e/kWh",
       "label": "World average electricity carbon intensity, 2025",
-      "scope": "Global power sector average, used to turn the AI and video electricity into a scenario carbon figure. Individual countries differ a lot, and Google's own reported emissions are not used here.",
+      "scope": "Global power sector average, used to turn the AI and video electricity into a scenario carbon figure. Per Ember it covers life-cycle emissions of electricity generation, not losses in delivery to users and not the life cycle of AI hardware or training. Individual countries differ a lot, and Google's own reported emissions are not used here.",
       "source": "Ember, Global Electricity Review 2026: 458 g CO2e/kWh in 2025 (471 in 2024)",
       "source_url": "https://ember-energy.org/app/uploads/2026/04/Global-Electricity-Review-2026.pdf",
       "status": "verified",
