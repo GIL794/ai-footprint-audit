@@ -26,7 +26,7 @@ for(const [w,h,m] of [[320,640,true],[390,844,true],[1280,900,false]]){
   ok(`touch targets >=44px at ${w}`,small.length===0,small.join(','));
   const clip=await b.ev(`[...document.querySelectorAll('.sources td, .sources th')].filter(e=>e.scrollWidth>e.clientWidth+1).length`); ok(`sources cells not clipped at ${w}`,clip===0,String(clip));
   const h1=await b.ev(`document.querySelector('#try-heading').getBoundingClientRect().top+scrollY`); ok(`calculator starts near top at ${w}`,h1<600,String(Math.round(h1)));
-  await b.shot(`/tmp/out/${w}-full.png`,true);
+  await b.shot(`/tmp/ai-footprint-out/${w}-full.png`,true);
 }
 // keyboard tab traversal
 await vp(1280,900,false); await b.goto('http://127.0.0.1:8765/index.html');
