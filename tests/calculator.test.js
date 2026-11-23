@@ -44,9 +44,9 @@ test('default scenario reproduces the headline numbers (Modern estimate)', () =>
   // Electricity: 9125 * 0.24 Wh = 2.19 kWh
   assert.equal(r.energyKwh.ai, 2.19);
   // Carbon: 2.19 kWh * 458 g/kWh = 1.00 kg
-  assert.equal(r.carbonKg.ai, 1.0);
+  assert.equal(r.carbonKg.ai, 1.00302);
   // Water, on-site only: 9125 * 0.26 mL = 2.3725 L (no power-plant water is added)
-  assert.equal(r.waterL.ai, 2.37);
+  assert.equal(r.waterL.ai, 2.3725);
 });
 
 test('Conservative estimate uses its own water figure unchanged', () => {
@@ -54,17 +54,17 @@ test('Conservative estimate uses its own water figure unchanged', () => {
   const r = computeFootprint(buildInputs(s, bench));
   // 9125 * 10 mL = 91.25 L
   assert.equal(r.waterL.ai, 91.25);
-  assert.equal(r.energyKwh.ai, 26.46);
+  assert.equal(r.energyKwh.ai, 26.4625);
 });
 
 test('streaming, burger and total arithmetic', () => {
   const r = computeFootprint({ promptsPerDay: 100, burgersPerWeek: 1, streamingHoursPerDay: 1, promptWh: 0.24, promptWaterMl: 0.26, burgerCo2Kg: 10, streamingWhPerHr: 77, gridCarbonGPerKwh: 400, });
   assert.deepEqual(Object.keys(r.waterL), ['ai']); // no burger water, total or share: different kinds of water
-  assert.equal(r.energyKwh.streaming, 28.11); // 365 h * 77 Wh
+  assert.equal(r.energyKwh.streaming, 28.105); // 365 h * 77 Wh
   assert.equal(r.waterL.streaming, undefined); // streaming water is not estimated
   assert.equal(r.carbonKg.burgers, 520);
-  assert.equal(r.carbonKg.streaming, 11.24); // 28.105 kWh * 0.4
-  assert.equal(r.energyKwh.total, r.energyKwh.ai + r.energyKwh.streaming);
+  assert.equal(r.carbonKg.streaming, 11.242); // 28.105 kWh * 0.4
+  assert.ok(Math.abs(r.energyKwh.total - r.energyKwh.ai - r.energyKwh.streaming) < 1e-10);
 });
 
 test('removed unsourced figures are really gone from the data and the code', () => {
@@ -78,12 +78,12 @@ test('removed unsourced figures are really gone from the data and the code', () 
 });
 
 test('burger carbon: two sourced systems, no average between them', () => {
-  assert.equal(bench.constants.burger_co2e_kg.value, 14.92);
-  assert.equal(bench.constants.burger_co2e_dairy_kg.value, 4.99);
+  assert.equal(bench.constants.burger_co2e_kg.value, 14.922);
+  assert.equal(bench.constants.burger_co2e_dairy_kg.value, 4.995);
   const beef = effectiveConstants(parseScenario(q('')), bench).burgerCo2Kg;
   const dairy = effectiveConstants(parseScenario(q('beef=dairy')), bench).burgerCo2Kg;
-  assert.equal(beef, 14.92);
-  assert.equal(dairy, 4.99);
+  assert.equal(beef, 14.922);
+  assert.equal(dairy, 4.995);
   assert.equal(scenarioToParams(parseScenario(q('beef=dairy'))).toString(), 'beef=dairy');
   // a custom value still wins over the system
   assert.equal(effectiveConstants(parseScenario(q('beef=dairy&bCo2=7')), bench).burgerCo2Kg, 7);
@@ -153,4 +153,19 @@ test('the page never shows a water ratio or share between AI and burgers', () =>
   const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.ok(!/stack-water|burgerWaterL|water-share/.test(html));
   assert.ok(/Why there is no water comparison/.test(html));
+});
+
+
+test('small positive quantities remain positive, not prematurely rounded to zero', () => {
+  const r = computeFootprint({promptsPerDay: 1, promptWh: 0.0001, promptWaterMl: 0.0001});
+  assert.ok(r.energyKwh.ai > 0 && r.carbonKg.ai > 0 && r.waterL.ai > 0);
+});
+
+test('zero video benchmark has no invented equivalent', () => {
+  assert.equal(computeFootprint({streamingWhPerHr: 0}).equivalents.streamingHoursForYearAiEnergy, null);
+});
+
+test('override cap is the same for share links and editor validation', () => {
+  assert.equal(parseScenario(q('pWh=' + calc.OVERRIDE_MAX)).overrides.promptWh, calc.OVERRIDE_MAX);
+  assert.equal(parseScenario(q('pWh=' + (calc.OVERRIDE_MAX + 1))).overrides.promptWh, null);
 });
