@@ -1,4 +1,5 @@
 ## Accuracy re-review, 23 November 2026
+- Version script URLs to prevent the old cached ES-module calculator breaking the new classic-script page after deployment.
 - Rechecked primary sources for Gemini, older ChatGPT energy/water, Ember grid, Google electricity, IEA data centres/video, Google search and beef factors.
 - Preserved calculation precision; rounded only for display. Beef derivations now retain 14.922 and 4.995 kg before display rounding.
 - Corrected water boundary wording, custom-grid labels, zero benchmark behavior, zero-width chart bars, custom-vs-published comparison rows and fractional shared slider values.
