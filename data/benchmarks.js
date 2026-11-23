@@ -1,6 +1,6 @@
 // GENERATED from data/benchmarks.json by scripts/build-data.mjs. Do not edit by hand.
 window.AI_FOOTPRINT_BENCHMARKS = {
-  "schema_version": "1.3.0",
+  "schema_version": "1.3.1",
   "last_updated": "2026-11-23",
   "license": "CC-BY-4.0",
   "status_key": {
@@ -51,7 +51,7 @@ window.AI_FOOTPRINT_BENCHMARKS = {
       "status": "derived"
     },
     "burger_co2e_kg": {
-      "value": 14.92,
+      "value": 14.922,
       "unit": "kg CO2e",
       "label": "Carbon to make one beef burger from beef herds (150 g of raw beef)",
       "scope": "Farm to shop, per kg of raw beef. Prepared weight and cooking are not included.",
@@ -132,7 +132,7 @@ window.AI_FOOTPRINT_BENCHMARKS = {
     "global_dc_source": "IEA, Energy and AI (2025)",
     "global_dc_source_url": "https://www.iea.org/reports/energy-and-ai",
     "burger_co2e_dairy_kg": {
-      "value": 4.99,
+      "value": 4.995,
       "unit": "kg CO2e",
       "label": "Carbon to make one beef burger from dairy herds (150 g of raw beef)",
       "scope": "Farm to shop, per kg of raw beef. Prepared weight and cooking are not included.",
