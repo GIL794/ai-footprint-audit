@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Environmental Footprint — Open-Source Scale & Math Validator</title>
+  <meta name="description" content="Audit the real energy, water, and carbon footprint of AI against everyday baselines and macro-grid realities. Open-source, stress-testable, and citation-backed." />
+
+  <!-- Open Graph / Social Preview Cards -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AI Environmental Footprint — Open-Source Scale & Math Validator" />
+  <meta property="og:description" content="Stress-test AI energy & water claims with live sliders, embodied carbon toggles, and verifiable primary sources." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI Environmental Footprint — Open-Source Scale & Math Validator" />
+  <meta name="twitter:description" content="Stress-test AI energy & water claims with live sliders, embodied carbon toggles, and verifiable primary sources." />
+
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #131a26;
+      --surface-2: #1a2333;
+      --border: #28354d;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --radius: 12px;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      line-height: 1.15;
+      margin: 0 0 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      max-width: 72ch;
+      font-size: 1.05rem;
+      margin: 0;
+    }
+
+    /* Stress-Test Control Bar */
+    .control-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+      font-weight: 600;
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--bg);
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      width: 100%;
+    }
+
+    .segmented button {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .segmented button[aria-pressed="true"] {
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0.45rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .toggle-switch input {
+      accent-color: var(--accent);
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      margin: 0;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tab-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn[aria-selected="true"] {
+      background: var(--accent);
+      color: #06101d;
+      border-color: var(--accent);
+    }
+
+    /* Bar Chart */
+    .chart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.92rem;
+      gap: 1rem;
+    }
+
+    .bar-label { font-weight: 600; }
+    .bar-val { font-family: var(--font-mono); color: var(--accent); }
+
+    .bar-track {
+      width: 100%;
+      height: 22px;
+      background: var(--bg);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 5px;
+      transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      min-width: 4px;
+    }
+
+    .bar-fill.highlight-ai {
+      background: linear-gradient(90deg, var(--green), var(--accent));
+    }
+
+    .bar-fill.highlight-macro {
+      background: linear-gradient(90deg, var(--amber), var(--rose));
+    }
+
+    .bar-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Calculator Grid */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.75rem;
+    }
+
+    @media (max-width: 820px) {
+      .calc-grid { grid-template-columns: 1fr; }
+    }
+
+    .slider-box {
+      margin-bottom: 1.25rem;
+    }
+
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.92rem;
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem;
+    }
+
+    .stat-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-num {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin: 0.25rem 0;
+      color: var(--text);
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--green);
+    }
+
+    .stacked-bar {
+      display: flex;
+      height: 18px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      margin: 0.5rem 0 0.75rem;
+    }
+
+    .seg-ai { background: var(--green); transition: width 0.25s ease; }
+    .seg-stream { background: var(--accent); transition: width 0.25s ease; }
+    .seg-beef { background: var(--rose); transition: width 0.25s ease; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.35rem;
+    }
+
+    /* Action Buttons */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1.25rem;
+    }
+
+    .btn {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--accent); }
+    .btn-primary {
+      background: var(--accent);
+      color: #06101d;
+      border-color: var(--accent);
+    }
+
+    /* Audit Table & Custom Constants */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.7rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .custom-field label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .custom-field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+    }
+
+    .formula-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-row">
+        <span class="badge">OPEN-SOURCE AUDIT v1.1</span>
+        <span class="badge">DATA: data/benchmarks.json (CC-BY-4.0)</span>
+        <span class="badge">URL-STATE SYNCED</span>
+      </div>
+      <h1>AI Environmental Footprint: Scale &amp; Math Validator</h1>
+      <p class="subtitle">
+        Separating viral personal guilt-tripping from macro-grid reality. Stress-test every number, toggle amortized training &amp; hardware carbon, override the constants, and share your exact URL scenario.
+      </p>
+    </header>
+
+    <!-- Global Stress-Test Bar -->
+    <section class="control-bar" aria-label="Global Assumption Controls">
+      <div class="control-group">
+        <label id="mode-label">1. Inference Assumption Baseline</label>
+        <div class="segmented" role="group" aria-labelledby="mode-label">
+          <button type="button" id="btn-modern" aria-pressed="true">Modern 2025/26 (0.24 Wh)</button>
+          <button type="button" id="btn-conservative" aria-pressed="false">Conservative IEA (2.9 Wh)</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="chk-embodied">2. Lifecycle Boundary</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk-embodied" />
+          <span>Include amortized training &amp; GPU embodied carbon (+33% energy)</span>
+        </label>
+      </div>
+
+      <div class="control-group">
+        <label id="scale-label">3. Chart Axis Scale</label>
+        <div class="segmented" role="group" aria-labelledby="scale-label">
+          <button type="button" id="btn-linear" aria-pressed="true">Linear Scale</button>
+          <button type="button" id="btn-log" aria-pressed="false">Logarithmic Scale</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Macro & Everyday Scale Comparator -->
+    <section class="card" aria-labelledby="comparator-heading">
+      <div class="card-header">
+        <h2 id="comparator-heading">1. Relative Scale Comparator</h2>
+        <div class="tabs" role="tablist" aria-label="Comparison Datasets">
+          <button class="tab-btn" role="tab" aria-selected="true" data-tab="globalWater">Global Freshwater</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="personalWater">Personal Water</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="digitalEnergy">Digital Energy</button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="jevons">Jevons &amp; Grid Growth</button>
+        </div>
+      </div>
+      <div id="chart-container" class="chart-list" aria-live="polite"></div>
+    </section>
+
+    <!-- Section 2: Personal Footprint Calculator -->
+    <section class="card" aria-labelledby="calc-heading">
+      <div class="card-header">
+        <h2 id="calc-heading">2. Interactive Annual Footprint Stress-Tester</h2>
+      </div>
+
+      <div class="calc-grid">
+        <div>
+          <div class="slider-box">
+            <div class="slider-top">
+              <label for="slider-prompts">AI Text Prompts / Day</label>
+              <strong id="val-prompts" style="font-family:var(--font-mono)">25 / day</strong>
+            </div>
+            <input type="range" id="slider-prompts" min="0" max="300" step="5" value="25" />
+          </div>
+
+          <div class="slider-box">
+            <div class="slider-top">
+              <label for="slider-burgers">Beef Burgers / Week</label>
+              <strong id="val-burgers" style="font-family:var(--font-mono)">2 / week</strong>
+            </div>
+            <input type="range" id="slider-burgers" min="0" max="14" step="1" value="2" />
+          </div>
+
+          <div class="slider-box">
+            <div class="slider-top">
+              <label for="slider-stream">HD Video Streaming / Day</label>
+              <strong id="val-stream" style="font-family:var(--font-mono)">1.5 hrs / day</strong>
+            </div>
+            <input type="range" id="slider-stream" min="0" max="8" step="0.5" value="1.5" />
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn btn-primary" id="btn-share-url">Copy Shareable Scenario URL</button>
+            <button type="button" class="btn" id="btn-export-json">Export JSON Audit</button>
+            <button type="button" class="btn" id="btn-export-csv">Export CSV</button>
+            <button type="button" class="btn" id="btn-export-png">Download PNG Card</button>
+          </div>
+          <p id="copy-feedback" role="status" aria-live="polite" style="font-size:0.82rem; color:var(--green); margin:0.5rem 0 0; min-height:1.2em;"></p>
+        </div>
+
+        <div aria-live="polite">
+          <div class="stat-cards">
+            <div class="stat">
+              <div class="stat-title">Your Annual AI Water</div>
+              <div class="stat-num" id="out-ai-water">27.4 L</div>
+              <div class="stat-sub" id="out-ai-water-share">0.01% of combined total</div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Your Annual AI Energy</div>
+              <div class="stat-num" id="out-ai-energy">2.19 kWh</div>
+              <div class="stat-sub" id="out-ai-energy-eq">≈ 28.4 hrs of HD Netflix</div>
+            </div>
+            <div class="stat">
+              <div class="stat-title">Your Annual AI Carbon</div>
+              <div class="stat-num" id="out-ai-carbon">0.83 kg</div>
+              <div class="stat-sub" id="out-ai-carbon-share">0.21% of combined total</div>
+            </div>
+          </div>
+
+          <div style="font-size:0.85rem; font-weight:600;">Annual Water Share (AI vs. Streaming vs. Beef)</div>
+          <div class="stacked-bar" id="stack-water">
+            <div class="seg-ai" id="w-seg-ai" style="width:1%"></div>
+            <div class="seg-stream" id="w-seg-stream" style="width:1%"></div>
+            <div class="seg-beef" id="w-seg-beef" style="width:98%"></div>
+          </div>
+
+          <div style="font-size:0.85rem; font-weight:600; margin-top:0.85rem;">Annual Carbon Share (AI vs. Streaming vs. Beef)</div>
+          <div class="stacked-bar" id="stack-carbon">
+            <div class="seg-ai" id="c-seg-ai" style="width:1%"></div>
+            <div class="seg-stream" id="c-seg-stream" style="width:5%"></div>
+            <div class="seg-beef" id="c-seg-beef" style="width:94%"></div>
+          </div>
+
+          <div class="legend">
+            <span><i class="dot" style="background:var(--green)"></i>AI Prompts</span>
+            <span><i class="dot" style="background:var(--accent)"></i>HD Streaming</span>
+            <span><i class="dot" style="background:var(--rose)"></i>Beef Burgers</span>
+          </div>
+
+          <div class="formula-box" id="live-formula"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Open-Source Audit & Custom Constants -->
+    <section class="card" aria-labelledby="audit-heading">
+      <div class="card-header">
+        <h2 id="audit-heading">3. Methodology Audit &amp; Custom Constant Overrides</h2>
+        <button type="button" class="btn" id="btn-reset-constants">Reset to Verified Defaults</button>
+      </div>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-top:0;">
+        Disagree with a constant? Override any parameter below to test sensitivity in real time, or open a GitHub Issue with a peer-reviewed citation to update <code>data/benchmarks.json</code>.
+      </p>
+
+      <div class="custom-grid">
+        <div class="custom-field">
+          <label for="inp-prompt-wh">Energy / Prompt (Wh)</label>
+          <input type="number" id="inp-prompt-wh" step="0.01" min="0" />
+        </div>
+        <div class="custom-field">
+          <label for="inp-prompt-water">Water / Prompt (mL)</label>
+          <input type="number" id="inp-prompt-water" step="0.1" min="0" />
+        </div>
+        <div class="custom-field">
+          <label for="inp-burger-water">Water / Burger (Liters)</label>
+          <input type="number" id="inp-burger-water" step="50" min="0" />
+        </div>
+        <div class="custom-field">
+          <label for="inp-stream-wh">HD Streaming (Wh / hr)</label>
+          <input type="number" id="inp-stream-wh" step="1" min="0" />
+        </div>
+        <div class="custom-field">
+          <label for="inp-grid-co2">Grid Intensity (g CO₂e/kWh)</label>
+          <input type="number" id="inp-grid-co2" step="10" min="0" />
+        </div>
+      </div>
+
+      <div style="overflow-x:auto; margin-top:1.5rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Default (Range)</th>
+              <th>Boundary / Scope</th>
+              <th>Primary Source</th>
+            </tr>
+          </thead>
+          <tbody id="sources-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span>Code: MIT License • Dataset &amp; Methodology: CC-BY-4.0</span>
+      <span>Engine: <code>src/calculator.js</code> • Data: <code>data/benchmarks.json</code></span>
+    </footer>
+  </div>
+
+  <canvas id="share-canvas" width="1200" height="630" style="display:none;"></canvas>
+
+  <script type="module">
+    import { computeFootprint } from './src/calculator.js';
+
+    // Embedded fallback ensures index.html also works if opened directly via file:// without a local HTTP server
+    let benchmarks = null;
+    try {
+      const resp = await fetch('./data/benchmarks.json');
+      if (resp.ok) benchmarks = await resp.json();
+    } catch (_) {}
+
+    if (!benchmarks) {
+      benchmarks = {
+        modes: {
+          modern: { prompt_wh: 0.24, prompt_water_ml: 3.0, embodied_training_wh: 0.08, embodied_training_water_ml: 0.6 },
+          conservative: { prompt_wh: 2.9, prompt_water_ml: 10.0, embodied_training_wh: 0.45, embodied_training_water_ml: 2.2 }
+        },
+        constants: {
+          burger_water_l: { value: 2500, range: [1800, 3500], unit: "L", label: "1 Beef Burger (150g)", scope: "Blue + green + grey water", source: "Mekonnen & Hoekstra (2012)" },
+          burger_co2e_kg: { value: 3.6, range: [2.5, 5.5], unit: "kg CO2e", label: "1 Beef Burger (150g)", scope: "Cradle-to-retail", source: "Poore & Nemecek (2018)" },
+          streaming_hd_wh_per_hr: { value: 77, range: [50, 120], unit: "Wh", label: "1 hr HD Streaming", scope: "DC + CDN + Router + Display", source: "IEA / Carbon Trust" },
+          google_search_wh: { value: 0.3, range: [0.2, 0.4], unit: "Wh", label: "1 Non-AI Web Search", scope: "Server + cooling", source: "Google / IEA" },
+          grid_carbon_intensity_g_per_kwh: { value: 380, range: [50, 650], unit: "g/kWh", label: "Grid Carbon Intensity", scope: "Global average", source: "IEA / Ember" },
+          global_agriculture_blue_water_km3: { value: 228, range: [200, 260], unit: "km³/yr", label: "Animal Agriculture Blue Water", scope: "Rivers, lakes & aquifers", source: "FAO AQUASTAT" },
+          global_ai_datacenter_water_2028_km3: { value: 1.07, range: [0.7, 1.6], unit: "km³/yr", label: "AI Data Centers (2028 Proj.)", scope: "Cooling + power + chip fabs", source: "Li et al. (2023)" },
+          jevons_google_twh: [
+            { year: "2023", twh: 25.3, note: "Pre-GenAI scale-out baseline" },
+            { year: "2024", twh: 31.8, note: "AI Overviews & Gemini rollout" },
+            { year: "2025", twh: 43.6, note: "+37% YoY despite 33x per-prompt efficiency gain" }
+          ],
+          global_dc_twh: [
+            { year: "2022", twh: 340, note: "All global data centers" },
+            { year: "2025", twh: 485, note: "IEA World Energy Outlook" },
+            { year: "2030 (Proj.)", twh: 960, note: "AI drives ~75% of growth" }
+          ]
+        }
+      };
+    }
+
+    // Parse URL state
+    const params = new URLSearchParams(window.location.search);
+    const state = {
+      mode: params.get('mode') === 'conservative' ? 'conservative' : 'modern',
+      embodied: params.get('embodied') === '1',
+      logScale: params.get('scale') === 'log',
+      tab: params.get('tab') || 'globalWater',
+      promptsPerDay: Number(params.get('prompts') ?? 25),
+      burgersPerWeek: Number(params.get('burgers') ?? 2),
+      streamingHoursPerDay: Number(params.get('stream') ?? 1.5),
+      custom: {
+        promptWh: params.has('pWh') ? Number(params.get('pWh')) : benchmarks.modes.modern.prompt_wh,
+        promptWaterMl: params.has('pMl') ? Number(params.get('pMl')) : benchmarks.modes.modern.prompt_water_ml,
+        burgerWaterL: params.has('bL') ? Number(params.get('bL')) : benchmarks.constants.burger_water_l.value,
+        streamingWhPerHr: params.has('sWh') ? Number(params.get('sWh')) : benchmarks.constants.streaming_hd_wh_per_hr.value,
+        gridCarbonGPerKwh: params.has('gCo2') ? Number(params.get('gCo2')) : benchmarks.constants.grid_carbon_intensity_g_per_kwh.value
+      }
+    };
+
+    if (state.mode === 'conservative' && !params.has('pWh')) {
+      state.custom.promptWh = benchmarks.modes.conservative.prompt_wh;
+      state.custom.promptWaterMl = benchmarks.modes.conservative.prompt_water_ml;
+    }
+
+    // Populate source audit table
+    const tbody = document.getElementById('sources-tbody');
+    Object.values(benchmarks.constants).forEach(item => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${item.label}</strong></td>
+        <td style="font-family:var(--font-mono)">${item.value} ${item.unit} <span style="color:var(--text-muted)">(${item.range[0]}–${item.range[1]})</span></td>
+        <td>${item.scope}</td>
+        <td>${item.source}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    function syncUrl() {
+      const u = new URL(window.location.href);
+      u.searchParams.set('mode', state.mode);
+      u.searchParams.set('embodied', state.embodied ? '1' : '0');
+      u.searchParams.set('scale', state.logScale ? 'log' : 'linear');
+      u.searchParams.set('tab', state.tab);
+      u.searchParams.set('prompts', state.promptsPerDay);
+      u.searchParams.set('burgers', state.burgersPerWeek);
+      u.searchParams.set('stream', state.streamingHoursPerDay);
+      u.searchParams.set('pWh', state.custom.promptWh);
+      u.searchParams.set('pMl', state.custom.promptWaterMl);
+      u.searchParams.set('bL', state.custom.burgerWaterL);
+      u.searchParams.set('sWh', state.custom.streamingWhPerHr);
+      u.searchParams.set('gCo2', state.custom.gridCarbonGPerKwh);
+      window.history.replaceState({}, '', u);
+    }
+
+    function getChartItems() {
+      const m = benchmarks.modes[state.mode];
+      const embWh = state.embodied ? m.embodied_training_wh : 0;
+      const embMl = state.embodied ? m.embodied_training_water_ml : 0;
+      const effWh = Number((state.custom.promptWh + embWh).toFixed(3));
+      const effMl = Number((state.custom.promptWaterMl + embMl).toFixed(2));
+      const yearHeavyAiWaterL = Number(((100 * 365 * effMl) / 1000).toFixed(1));
+
+      if (state.tab === 'globalWater') {
+        return [
+          { label: 'Animal Agriculture (Blue Water Only)', value: 228, unit: 'km³/yr', note: 'Surface & groundwater for livestock feed & drinking (excludes rainwater)', type: 'other' },
+          { label: 'AI Data Centers (2028 Projection)', value: 1.07, unit: 'km³/yr', note: 'Includes cooling, power generation, and chip fabrication (~213x smaller)', type: 'ai' }
+        ];
+      }
+      if (state.tab === 'personalWater') {
+        return [
+          { label: '1 Beef Burger (150g)', value: state.custom.burgerWaterL, unit: 'Liters', note: 'Total supply-chain water footprint', type: 'other' },
+          { label: '1 Full Year of Heavy Daily AI (100 prompts/day)', value: yearHeavyAiWaterL, unit: 'Liters', note: `36,500 prompts × ${effMl} mL/prompt`, type: 'ai' }
+        ];
+      }
+      if (state.tab === 'digitalEnergy') {
+        return [
+          { label: '1 Hour of HD Netflix Streaming', value: state.custom.streamingWhPerHr, unit: 'Wh', note: 'Data center + CDN + router + display', type: 'other' },
+          { label: '1 Traditional Non-AI Web Search', value: 0.3, unit: 'Wh', note: 'Standard search index lookup', type: 'other' },
+          { label: `1 AI Text Prompt (${state.mode === 'modern' ? 'Modern' : 'Conservative'}${state.embodied ? ' + Embodied' : ''})`, value: effWh, unit: 'Wh', note: `Equivalent to ${(state.custom.streamingWhPerHr / Math.max(effWh, 0.01)).toFixed(0)} prompts per hour of HD video`, type: 'ai' }
+        ];
+      }
+      return [
+        { label: 'Global Data Centers (2025)', value: 485, unit: 'TWh/yr', note: 'IEA World Energy Outlook baseline', type: 'macro' },
+        { label: 'Global Data Centers (2030 Projection)', value: 960, unit: 'TWh/yr', note: 'Jevons Paradox: AI servers drive ~75% of incremental load', type: 'macro' },
+        { label: 'Google Total Electricity (2025)', value: 43.6, unit: 'TWh/yr', note: '+37% YoY despite 33x per-prompt efficiency improvement', type: 'macro' }
+      ];
+    }
+
+    function renderChart() {
+      const items = getChartItems();
+      const maxVal = Math.max(...items.map(i => i.value), 0.001);
+      const container = document.getElementById('chart-container');
+      container.innerHTML = '';
+
+      items.forEach(item => {
+        let pct = 0;
+        if (state.logScale) {
+          pct = (Math.log10(item.value + 1) / Math.log10(maxVal + 1)) * 100;
+        } else {
+          pct = (item.value / maxVal) * 100;
+        }
+        const cls = item.type === 'ai' ? 'highlight-ai' : item.type === 'macro' ? 'highlight-macro' : '';
+        const row = document.createElement('div');
+        row.className = 'bar-row';
+        row.innerHTML = `
+          <div class="bar-meta">
+            <span class="bar-label">${item.label}</span>
+            <span class="bar-val">${item.value.toLocaleString()} ${item.unit}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${cls}" style="width:${Math.max(pct, 1)}%"></div>
+          </div>
+          <div class="bar-note">${item.note}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    let lastResult = null;
+
+    function renderAll() {
+      const m = benchmarks.modes[state.mode];
+
+      // Sync buttons & inputs
+      document.getElementById('btn-modern').setAttribute('aria-pressed', state.mode === 'modern');
+      document.getElementById('btn-conservative').setAttribute('aria-pressed', state.mode === 'conservative');
+      document.getElementById('chk-embodied').checked = state.embodied;
+      document.getElementById('btn-linear').setAttribute('aria-pressed', !state.logScale);
+      document.getElementById('btn-log').setAttribute('aria-pressed', state.logScale);
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.setAttribute('aria-selected', btn.dataset.tab === state.tab);
+      });
+
+      document.getElementById('slider-prompts').value = state.promptsPerDay;
+      document.getElementById('slider-burgers').value = state.burgersPerWeek;
+      document.getElementById('slider-stream').value = state.streamingHoursPerDay;
+
+      document.getElementById('val-prompts').textContent = `${state.promptsPerDay} / day`;
+      document.getElementById('val-burgers').textContent = `${state.burgersPerWeek} / week`;
+      document.getElementById('val-stream').textContent = `${state.streamingHoursPerDay} hrs / day`;
+
+      document.getElementById('inp-prompt-wh').value = state.custom.promptWh;
+      document.getElementById('inp-prompt-water').value = state.custom.promptWaterMl;
+      document.getElementById('inp-burger-water').value = state.custom.burgerWaterL;
+      document.getElementById('inp-stream-wh').value = state.custom.streamingWhPerHr;
+      document.getElementById('inp-grid-co2').value = state.custom.gridCarbonGPerKwh;
+
+      lastResult = computeFootprint({
+        promptsPerDay: state.promptsPerDay,
+        burgersPerWeek: state.burgersPerWeek,
+        streamingHoursPerDay: state.streamingHoursPerDay,
+        includeEmbodied: state.embodied,
+        promptWh: state.custom.promptWh,
+        promptWaterMl: state.custom.promptWaterMl,
+        embodiedWh: m.embodied_training_wh,
+        embodiedWaterMl: m.embodied_training_water_ml,
+        burgerWaterL: state.custom.burgerWaterL,
+        streamingWhPerHr: state.custom.streamingWhPerHr,
+        gridCarbonGPerKwh: state.custom.gridCarbonGPerKwh
+      });
+
+      document.getElementById('out-ai-water').textContent = `${lastResult.waterL.ai.toLocaleString()} L`;
+      document.getElementById('out-ai-water-share').textContent = `${lastResult.waterL.aiSharePct}% of combined water`;
+      document.getElementById('out-ai-energy').textContent = `${lastResult.energyKwh.ai.toLocaleString()} kWh`;
+      document.getElementById('out-ai-energy-eq').textContent = `≈ ${lastResult.equivalents.streamingHoursForYearAiEnergy} hrs of HD video`;
+      document.getElementById('out-ai-carbon').textContent = `${lastResult.carbonKg.ai.toLocaleString()} kg`;
+      document.getElementById('out-ai-carbon-share').textContent = `${lastResult.carbonKg.aiSharePct}% of combined carbon`;
+
+      // Update stacked bars
+      const wTot = Math.max(lastResult.waterL.total, 0.001);
+      document.getElementById('w-seg-ai').style.width = `${(lastResult.waterL.ai / wTot) * 100}%`;
+      document.getElementById('w-seg-stream').style.width = `${(lastResult.waterL.streaming / wTot) * 100}%`;
+      document.getElementById('w-seg-beef').style.width = `${(lastResult.waterL.burgers / wTot) * 100}%`;
+
+      const cTot = Math.max(lastResult.carbonKg.total, 0.001);
+      document.getElementById('c-seg-ai').style.width = `${(lastResult.carbonKg.ai / cTot) * 100}%`;
+      document.getElementById('c-seg-stream').style.width = `${(lastResult.carbonKg.streaming / cTot) * 100}%`;
+      document.getElementById('c-seg-beef').style.width = `${(lastResult.carbonKg.burgers / cTot) * 100}%`;
+
+      document.getElementById('live-formula').textContent =
+        `AI_Water = (${state.promptsPerDay} prompts/d × 365 d × ${lastResult.effectivePerPrompt.waterMl} mL) / 1000 = ${lastResult.waterL.ai} L/yr | ` +
+        `AI_Energy = (${lastResult.annualCounts.prompts.toLocaleString()} prompts × ${lastResult.effectivePerPrompt.wh} Wh) / 1000 = ${lastResult.energyKwh.ai} kWh/yr`;
+
+      renderChart();
+      syncUrl();
+    }
+
+    // Event Listeners
+    document.getElementById('btn-modern').addEventListener('click', () => {
+      state.mode = 'modern';
+      state.custom.promptWh = benchmarks.modes.modern.prompt_wh;
+      state.custom.promptWaterMl = benchmarks.modes.modern.prompt_water_ml;
+      renderAll();
+    });
+
+    document.getElementById('btn-conservative').addEventListener('click', () => {
+      state.mode = 'conservative';
+      state.custom.promptWh = benchmarks.modes.conservative.prompt_wh;
+      state.custom.promptWaterMl = benchmarks.modes.conservative.prompt_water_ml;
+      renderAll();
+    });
+
+    document.getElementById('chk-embodied').addEventListener('change', (e) => {
+      state.embodied = e.target.checked;
+      renderAll();
+    });
+
+    document.getElementById('btn-linear').addEventListener('click', () => { state.logScale = false; renderAll(); });
+    document.getElementById('btn-log').addEventListener('click', () => { state.logScale = true; renderAll(); });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.tab = btn.dataset.tab;
+        renderAll();
+      });
+    });
+
+    document.getElementById('slider-prompts').addEventListener('input', (e) => { state.promptsPerDay = Number(e.target.value); renderAll(); });
+    document.getElementById('slider-burgers').addEventListener('input', (e) => { state.burgersPerWeek = Number(e.target.value); renderAll(); });
+    document.getElementById('slider-stream').addEventListener('input', (e) => { state.streamingHoursPerDay = Number(e.target.value); renderAll(); });
+
+    document.getElementById('inp-prompt-wh').addEventListener('input', (e) => { state.custom.promptWh = Math.max(0, Number(e.target.value)); renderAll(); });
+    document.getElementById('inp-prompt-water').addEventListener('input', (e) => { state.custom.promptWaterMl = Math.max(0, Number(e.target.value)); renderAll(); });
+    document.getElementById('inp-burger-water').addEventListener('input', (e) => { state.custom.burgerWaterL = Math.max(0, Number(e.target.value)); renderAll(); });
+    document.getElementById('inp-stream-wh').addEventListener('input', (e) => { state.custom.streamingWhPerHr = Math.max(0, Number(e.target.value)); renderAll(); });
+    document.getElementById('inp-grid-co2').addEventListener('input', (e) => { state.custom.gridCarbonGPerKwh = Math.max(0, Number(e.target.value)); renderAll(); });
+
+    document.getElementById('btn-reset-constants').addEventListener('click', () => {
+      const m = benchmarks.modes[state.mode];
+      state.custom = {
+        promptWh: m.prompt_wh,
+        promptWaterMl: m.prompt_water_ml,
+        burgerWaterL: benchmarks.constants.burger_water_l.value,
+        streamingWhPerHr: benchmarks.constants.streaming_hd_wh_per_hr.value,
+        gridCarbonGPerKwh: benchmarks.constants.grid_carbon_intensity_g_per_kwh.value
+      };
+      renderAll();
+    });
+
+    document.getElementById('btn-share-url').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(window.location.href);
+      document.getElementById('copy-feedback').textContent = 'Scenario URL copied to clipboard! Anyone opening it will see your exact sliders & constants.';
+    });
+
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      const payload = { exported_at: new Date().toISOString(), scenario: state, audit_result: lastResult };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ai-footprint-audit.json';
+      a.click();
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      const rows = [
+        ['Category', 'Annual_Water_L', 'Annual_Energy_kWh', 'Annual_Carbon_kgCO2e'],
+        ['AI Prompts', lastResult.waterL.ai, lastResult.energyKwh.ai, lastResult.carbonKg.ai],
+        ['HD Streaming', lastResult.waterL.streaming, lastResult.energyKwh.streaming, lastResult.carbonKg.streaming],
+        ['Beef Burgers', lastResult.waterL.burgers, lastResult.energyKwh.burgers, lastResult.carbonKg.burgers],
+        ['Combined Total', lastResult.waterL.total, lastResult.energyKwh.total, lastResult.carbonKg.total]
+      ];
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ai-footprint-audit.csv';
+      a.click();
+    });
+
+    document.getElementById('btn-export-png').addEventListener('click', () => {
+      const canvas = document.getElementById('share-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0b0f17';
+      ctx.fillRect(0, 0, 1200, 630);
+      ctx.strokeStyle = '#28354d';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(24, 24, 1152, 582);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(`OPEN-SOURCE AI FOOTPRINT AUDIT • ${state.mode.toUpperCase()} MODE`, 60, 85);
+
+      ctx.fillStyle = '#f1f5f9';
+      ctx.font = 'bold 42px sans-serif';
+      ctx.fillText('Annual Personal Footprint Breakdown', 60, 145);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '24px sans-serif';
+      ctx.fillText(`Inputs: ${state.promptsPerDay} AI prompts/day • ${state.burgersPerWeek} burgers/week • ${state.streamingHoursPerDay} hrs HD stream/day`, 60, 195);
+
+      const cards = [
+        { title: 'AI WATER / YEAR', val: `${lastResult.waterL.ai} L`, sub: `${lastResult.waterL.aiSharePct}% of total`, x: 60 },
+        { title: 'AI ENERGY / YEAR', val: `${lastResult.energyKwh.ai} kWh`, sub: `≈ ${lastResult.equivalents.streamingHoursForYearAiEnergy} hrs HD video`, x: 430 },
+        { title: 'AI CARBON / YEAR', val: `${lastResult.carbonKg.ai} kg`, sub: `${lastResult.carbonKg.aiSharePct}% of total`, x: 800 }
+      ];
+
+      cards.forEach(c => {
+        ctx.fillStyle = '#131a26';
+        ctx.fillRect(c.x, 245, 340, 220);
+        ctx.strokeStyle = '#28354d';
+        ctx.strokeRect(c.x, 245, 340, 220);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(c.title, c.x + 24, 290);
+
+        ctx.fillStyle = '#34d399';
+        ctx.font = 'bold 46px monospace';
+        ctx.fillText(c.val, c.x + 24, 360);
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '20px sans-serif';
+        ctx.fillText(c.sub, c.x + 24, 415);
+      });
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '20px monospace';
+      ctx.fillText('Verify the math & constants: github.com/GIL794/ai-footprint-audit', 60, 550);
+
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'ai-footprint-card.png';
+      a.click();
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
