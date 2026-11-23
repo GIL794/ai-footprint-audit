@@ -1,3 +1,12 @@
+## Accuracy re-review, 23 November 2026
+- Rechecked primary sources for Gemini, older ChatGPT energy/water, Ember grid, Google electricity, IEA data centres/video, Google search and beef factors.
+- Preserved calculation precision; rounded only for display. Beef derivations now retain 14.922 and 4.995 kg before display rounding.
+- Corrected water boundary wording, custom-grid labels, zero benchmark behavior, zero-width chart bars, custom-vs-published comparison rows and fractional shared slider values.
+- Stated model/date/boundary limits beside comparisons. Removed growth-tab largest/smallest ratios between unrelated company/global years.
+- CSV/JSON now carry exact inputs, sources and boundary caveats. PNG includes omitted life-cycle stages and video boundary.
+- Made the override cap consistent between editor and shared links. Reset now clears all scenario choices.
+- Fixed clean-environment screenshot path in optional layout checks and added regression tests.
+
 # Changelog
 
 ## [1.2.0] - 2026-11-23
