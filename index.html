@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How much water, energy and carbon does AI use? An interactive estimate</title>
-  <meta name="description" content="Move three sliders to see roughly how much water, electricity and greenhouse gases your AI chatbot use adds up to in a year, with electricity and greenhouse gases set beside beef burgers and video streaming. Every number lists its source." />
+  <meta name="description" content="Move three sliders to see roughly how much water, electricity and greenhouse gases a scenario of AI chatbot use adds up to in a year, with electricity and greenhouse gases set beside beef burgers and video streaming. Every number lists its source." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0f17'/%3E%3Cpath d='M32 10c8 11 14 18 14 27a14 14 0 0 1-28 0c0-9 6-16 14-27z' fill='%2338bdf8'/%3E%3C/svg%3E" />
 
   <meta property="og:type" content="website" />
@@ -76,8 +76,14 @@
     .share-text { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
     .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.3rem; }
 
-    table.range-table { table-layout: fixed; overflow-wrap: anywhere; width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 0.4rem; }
-    @media (max-width: 420px) { table.range-table { font-size: 0.78rem; } .range-table th, .range-table td { padding: 0.4rem 0.25rem; } }
+    table.range-table { table-layout: auto; overflow-wrap: normal; word-break: normal; width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 0.4rem; }
+    @media (max-width: 520px) {
+      .range-table thead { position: absolute; left: -9999px; }
+      .range-table, .range-table tbody, .range-table tr, .range-table th, .range-table td { display: block; width: 100%; }
+      .range-table tr { border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.6rem; margin-bottom: 0.6rem; }
+      .range-table th, .range-table td { border-bottom: 0; padding: 0.15rem 0; }
+      .range-table td::before { content: attr(data-label) ": "; color: var(--text-muted); }
+    }
     .range-table th, .range-table td { text-align: left; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); }
     .range-table th { color: var(--text-muted); font-weight: 600; }
 
@@ -98,7 +104,8 @@
     .bar-label { font-weight: 600; }
     .bar-val { font-family: var(--font-mono); color: var(--accent); }
     .bar-track { width: 100%; height: 22px; background: var(--bg); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); margin: 0.3rem 0; }
-    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 5px; transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1); min-width: 4px; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 5px; transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+    .bar-fill.sliver { min-width: 4px; }
     .bar-fill.highlight-ai { background: linear-gradient(90deg, var(--green), var(--accent)); }
     .bar-fill.highlight-macro { background: linear-gradient(90deg, var(--amber), var(--rose)); }
     .bar-note { font-size: 0.85rem; color: var(--text-muted); }
@@ -192,13 +199,8 @@
             <div class="stat"><div class="stat-title">AI greenhouse gases per year</div><div class="stat-num" id="out-ai-carbon"></div><div class="stat-sub" id="out-ai-carbon-sub"></div></div>
           </div>
 
-          <p class="help" id="water-why"><strong>Why there is no water comparison:</strong> the Google example counts on-site cooling water; the older example counts cooling plus power-plant water. A burger's water footprint is thousands of litres in total, and about 94% of that is rain that fell on fields and grass. They are different kinds of water, so setting one beside the other would mislead. Water use also matters locally: a litre in a dry place has a different impact from a litre where water is plentiful.</p>
-          <p class="share-text" style="margin-top:0.5rem"><span><i class="dot seg-ai"></i>AI</span> &nbsp; <span><i class="dot seg-stream"></i>video</span> &nbsp; <span><i class="dot seg-beef"></i>Beef burgers</span></p>
-          <div class="share-title">Shares of this limited scenario (not a full footprint)</div>
-          <div class="stacked-bar" id="stack-carbon" role="img" aria-label="Share of carbon">
-            <div class="seg-ai" id="c-seg-ai"></div><div class="seg-stream" id="c-seg-stream"></div><div class="seg-beef" id="c-seg-beef"></div>
-          </div>
-          <p class="share-text" id="carbon-share-text"></p>
+          <p class="help" id="water-why"><strong>Why there is no water comparison:</strong> the Google example counts on-site cooling water; the older example counts cooling plus power-plant water. A burger's water footprint is thousands of litres in total, and about 94% of that is rain that fell on fields and grass. They are different kinds of water, so setting one beside the other would mislead. Water use also matters locally: a litre in a dry place has a different impact from a litre where water is plentiful.<span id="water-why-custom"></span></p>
+          <p class="help"><strong>Why there is no share or total:</strong> in the published examples, the AI figure counts data centres only, the video figure also counts your device and the network, and the beef figure counts a food supply chain. Adding them up or giving percentages would suggest a fair split of one footprint, which these numbers cannot support. The comparison charts in section 2 show each figure on its own, with its boundary.<span id="share-why-custom"></span></p>
 
           <h3>How much do the two estimates differ?</h3>
           <table class="range-table">
@@ -225,7 +227,7 @@
       <div class="tabs" role="tablist" aria-label="Comparisons">
         <button class="tab-btn" role="tab" id="tab-personalWater" aria-controls="chart-panel" data-tab="personalWater">Burger vs a year of AI (greenhouse gases)</button>
         <button class="tab-btn" role="tab" id="tab-digitalEnergy" aria-controls="chart-panel" data-tab="digitalEnergy">AI prompt vs video and search (energy)</button>
-        <button class="tab-btn" role="tab" id="tab-growth" aria-controls="chart-panel" data-tab="growth">Is efficiency keeping up with growth?</button>
+        <button class="tab-btn" role="tab" id="tab-growth" aria-controls="chart-panel" data-tab="growth">Efficiency gain and electricity growth, side by side</button>
       </div>
       <div id="chart-panel" role="tabpanel" aria-labelledby="tab-personalWater" tabindex="0">
         <p class="tab-what" id="tab-what"></p>
@@ -243,7 +245,10 @@
       <summary>3. For the curious: assumptions, your own numbers and sources</summary>
       <p class="section-intro" style="margin-top:0.6rem">Everything above is driven by the numbers here. You can change any of them to test how much they matter, or check where each came from.</p>
 
-      <p class="help"><strong>Not counted:</strong> training the AI model, making the chips, your own device and the network. Google's water figure also leaves out the water used at power plants. These omissions mean this is not a complete life-cycle footprint. The published per-prompt examples are not lower bounds for every chatbot or every request.</p>
+      <p class="help"><strong>Not counted (in the published examples):</strong> training the AI model, making the chips, your own device and the network. Google's water figure also leaves out the water used at power plants. These omissions mean this is not a complete life-cycle footprint. The published per-prompt examples are not lower bounds for every chatbot or every request.<span id="notcounted-custom"></span></p>
+
+      <h3>How the Google numbers were made</h3>
+      <p class="help">The 0.24 Wh and 0.26 mL come from a paper written by Google staff. They are not independently verified: Google's own blog post says the data and claims have not been verified by an independent third party. Google found that the energy per prompt is very uneven, so it reports a <em>median</em> prompt, not an average. It worked out each Gemini model's average energy per prompt, ranked the models, and took the one serving the middle prompt. The paper does not publish an average, so a real mix of prompts could use more or less than 0.24 Wh each. The water is not metered per prompt. Google multiplied the energy for each prompt (leaving out the data centre's own overhead energy) by the previous year's fleet-wide water-use rate for cooling, 1.15 litres per kWh. Where a data centre uses little or no water for cooling, the real figure differs.</p>
 
       <h3>Replace a number with your own</h3>
       <p class="help">Leave a box as it is to use the default. Clear it to go back to the default.</p>
@@ -259,7 +264,7 @@
       <div class="formula-box" id="live-formula"></div>
 
       <h3>Where each number comes from</h3>
-      <p class="help">The "Check" column says how far we have confirmed each number against the source it names. Unpublished author-set ranges were removed. The older water study reports 10 to 50 mL per response; this calculator uses its 10 mL low end, not its midpoint.</p>
+      <p class="help">The "Check" column says how far we have confirmed each number against the source it names. Unpublished author-set ranges were removed. The older water study gives a rounded summary of 10 to 50 mL per response; this calculator uses the 10 mL low end of that summary, not its midpoint and not a minimum (the study's own table lists some lower local values).</p>
       <table class="sources">
         <thead><tr><th scope="col">Number</th><th scope="col">Value</th><th scope="col">What it covers</th><th scope="col">Source</th><th scope="col">Check</th></tr></thead>
         <tbody id="sources-tbody"></tbody>
@@ -273,10 +278,10 @@
         <dt>Wh and kWh (electricity)</dt><dd>A watt-hour (Wh) is a small amount of electricity: a 10 W LED bulb uses 10 Wh in an hour. 1,000 Wh make a kilowatt-hour (kWh), which is what home electricity bills use.</dd>
         <dt>Greenhouse gases and CO₂e</dt><dd>Things we make or do release gases that warm the planet, such as carbon dioxide and methane. "CO₂e" (carbon dioxide equivalent) is one number that turns all of them into the amount of carbon dioxide that would warm the planet the same. It lets different things be compared.</dd>
         <dt>Blue, green and grey water</dt><dd>Blue is water taken from rivers and underground. Green is rain that crops and grass soak up. Grey is the water needed to dilute pollution. Most of the water behind beef is green.</dd>
-        <dt>Power-plant water</dt><dd>Water that evaporates at power stations to make the electricity a data centre uses. It is separate from the water the data centre itself uses for cooling. Google's figure leaves it out; the older estimate includes it.</dd>
-        <dt>Not counted</dt><dd>Training the AI model and making its chips also use energy and water. The estimates here do not include them, because no published figure that fits was found.</dd>
-        <dt>Squashed (logarithmic) scale</dt><dd>A chart where each step along the bar means "ten times bigger" instead of "the same amount bigger". It makes small things visible, but bar lengths no longer match real sizes.</dd>
-        <dt>Efficiency vs growth</dt><dd>When each use gets cheaper, people may use more of it, so the total can still rise. Economists call this the Jevons paradox.</dd>
+        <dt>Power-plant water</dt><dd>Water that evaporates at power stations to make the electricity a data centre uses. It is separate from the water the data centre itself uses for cooling. Google's published figure leaves it out; the older estimate includes it. Your own water number is not assumed to do either.</dd>
+        <dt>Not counted</dt><dd>Training the AI model and making its chips also use energy and water. The published examples here do not include them, because no published figure that fits was found. Numbers you enter yourself are not assumed to include or exclude them.</dd>
+        <dt>Squashed (logarithmic) scale</dt><dd>A chart where each equal extra length means "multiplied by the same factor" (for example ten times) instead of "the same amount added". The smallest bar is given a short starting length so it can be seen. It makes small things visible, but bar lengths no longer show true ratios, so read the numbers. A zero has no bar.</dd>
+        <dt>Efficiency gain and growth</dt><dd>When each use gets cheaper, people may use more of it, so the total can still rise. Economists call this the Jevons paradox.</dd>
       </dl>
     </details>
 
@@ -289,8 +294,8 @@
   <canvas id="share-canvas" width="1200" height="630" style="display:none;"></canvas>
   <div class="sr-only" id="sr-summary" role="status" aria-live="polite"></div>
 
-  <script src="data/benchmarks.js?v=1.3.1"></script>
-  <script src="src/calculator.js?v=1.3.1"></script>
+  <script src="data/benchmarks.js?v=1.3.2"></script>
+  <script src="src/calculator.js?v=1.3.2"></script>
   <script>
   (function () {
     'use strict';
@@ -317,8 +322,8 @@
     function energy(kwh) { return kwh < 1 ? sig(kwh * 1000) + ' Wh' : sig(kwh) + ' kWh'; }
     function carbon(kg) { return kg < 1 ? sig(kg * 1000) + ' g CO\u2082e' : sig(kg) + ' kg CO\u2082e'; }
     function ratioText(x, what) {
-      if (!isFinite(x)) return 'not comparable with';
-      if (x === 0) return '0% of';
+      if (!isFinite(x)) return 'not comparable with ' + what;
+      if (x === 0) return '0% of ' + what;
       if (x > 1.1) return 'about ' + sig(x) + ' times ' + what;
       if (x >= 0.9 && x <= 1.1) return 'about the same as ' + what;
       if (x >= 0.01) return 'about ' + sig(x * 100) + '% of ' + what;
@@ -371,23 +376,27 @@
 
     /* ---------- comparison charts ---------- */
     var TAB_WHAT = {
-      personalWater: 'Compares the greenhouse gases from making one beef burger with the greenhouse gases from a year of your own AI use. The AI figure is a scenario: the data centre electricity multiplied by the world-average electricity mix. It is not something Google measured.',
+      personalWater: 'Compares the greenhouse gases from making one beef burger with the greenhouse gases from a what-if year of AI prompts at the example rate. The AI figure is a scenario: the data centre electricity multiplied by the world-average electricity mix. It is not something Google measured.',
       digitalEnergy: 'Compares the electricity for one AI prompt with an hour of video and with one ordinary web search.',
-      growth: 'Google reports a large efficiency gain for its median Gemini text prompt. This asks whether the total electricity used has gone down as a result. Bars are in terawatt-hours (TWh), a very large unit: 1 TWh is a billion kWh.'
+      growth: 'Google reports a large efficiency gain for its median Gemini text prompt. This puts the figures side by side. It cannot show whether efficiency gains offset growth, because the bars measure different things. Bars are in terawatt-hours (TWh), a very large unit: 1 TWh is a billion kWh.'
     };
+
+    function ov(k) { return state.overrides[k] !== null && state.overrides[k] !== undefined; }
+    function promptCustom() { return ov('promptWh') || ov('promptWaterMl'); }
+    function videoTag() { return ov('streamingWhPerHr') ? 'video hours at your custom rate' : 'video hours (2019 example)'; }
 
     function chartItems() {
       var c = bench.constants;
       var e = calc.effectiveConstants(state, bench);
       var items = [];
       if (state.tab === 'personalWater') {
-        items.push({ label: 'One beef burger (150 g of raw beef, ' + (state.burgerSystem === 'dairy' ? 'dairy herds' : 'beef herds') + ')', value: e.burgerCo2Kg, unit: 'kg CO\u2082e', note: 'Farm to shop, from published life-cycle studies.', type: 'other' });
-        items.push({ label: 'A year of your AI use (' + state.promptsPerDay + ' prompts a day)', value: lastResult.carbonKg.ai, unit: 'kg CO\u2082e', note: 'Scenario: ' + lastResult.energyKwh.ai + ' kWh at ' + e.gridCarbonGPerKwh + ' g CO\u2082e per kWh (' + gridLabel() + '). Data centre electricity only.', type: 'ai' });
+        items.push({ label: ov('burgerCo2Kg') ? 'One burger (your custom figure; what it covers is up to you)' : 'One beef burger (150 g of raw beef, ' + (state.burgerSystem === 'dairy' ? 'dairy herds' : 'beef herds') + ')', value: e.burgerCo2Kg, unit: 'kg CO\u2082e', note: ov('burgerCo2Kg') ? 'Your custom carbon figure for one burger.' : 'Farm to shop, from published life-cycle studies (world averages).', type: 'other' });
+        items.push({ label: 'A what-if year of AI prompts (' + state.promptsPerDay + ' a day at the ' + (ov('promptWh') ? 'custom' : 'example') + ' rate)', value: lastResult.carbonKg.ai, unit: 'kg CO\u2082e', note: 'Scenario: ' + lastResult.energyKwh.ai + ' kWh at ' + e.gridCarbonGPerKwh + ' g CO\u2082e per kWh (' + gridLabel() + '). ' + (ov('promptWh') ? 'Electricity per prompt is your custom value; what it counts is up to you.' : 'Data centre electricity only.'), type: 'ai' });
       } else if (state.tab === 'digitalEnergy') {
-        items.push({ label: 'One hour of video', value: e.streamingWhPerHr, unit: 'Wh', note: 'Includes the data centre, the network, your router and your screen.', type: 'other', status: c.streaming_hd_wh_per_hr.status });
+        items.push({ label: 'One hour of video', value: e.streamingWhPerHr, unit: 'Wh', note: ov('streamingWhPerHr') ? 'Your custom figure for one hour of video.' : 'IEA 2019 estimate for typical viewing. Includes the data centre, the network, your router and your screen.', type: 'other', status: ov('streamingWhPerHr') ? undefined : c.streaming_hd_wh_per_hr.status });
         items.push({ label: 'One ordinary web search (2009)', value: c.google_search_wh.value, unit: 'Wh', note: 'A 2009 Google server figure, including building the search index. Not a current search or AI-search measurement.', type: 'other' });
         var perHour = lastResult.effectivePerPrompt.wh > 0 ? Math.round(e.streamingWhPerHr / lastResult.effectivePerPrompt.wh) : 0;
-        items.push({ label: 'One AI prompt (' + bench.modes[state.mode].short_label.toLowerCase() + ')', value: lastResult.effectivePerPrompt.wh, unit: 'Wh', note: 'Counts the data centre only, not your device or the network, so it is not a like-for-like match with video. Video uses a 2019 viewing estimate.' + (perHour ? ' About ' + perHour.toLocaleString() + ' prompts use the electricity of one hour of video.' : ''), type: 'ai' });
+        items.push({ label: 'One AI prompt (' + (ov('promptWh') ? 'your custom value' : bench.modes[state.mode].short_label.toLowerCase()) + ')', value: lastResult.effectivePerPrompt.wh, unit: 'Wh', note: (ov('promptWh') ? 'Your custom value. What it counts is up to you, so it may or may not be like for like with the video figure.' : 'Counts the data centre only, not your device or the network, so it is not a like-for-like match with video.') + (ov('streamingWhPerHr') ? '' : ' Video uses a 2019 viewing estimate.') + (perHour ? ' About ' + perHour.toLocaleString() + (perHour === 1 ? ' prompt uses' : ' prompts use') + ' the electricity of one hour of video.' : ''), type: 'ai' });
       } else if (state.tab === 'growth') {
         c.google_electricity_twh.forEach(function (y) { items.push({ label: "Google's total electricity, " + y.year, value: y.twh, unit: 'TWh', note: y.note, type: 'macro' }); });
         c.global_dc_twh.forEach(function (y) { items.push({ label: 'All data centres, ' + y.year, value: y.twh, unit: 'TWh', note: y.note, type: 'macro' }); });
@@ -395,14 +404,28 @@
       return items;
     }
 
+    // Linear: length proportional to value, zero has no bar.
+    // Squashed: true logarithmic. Length = 1 + log10(value / smallest positive value), scaled so the
+    // biggest bar is full width. Dimensionless, so Wh and kWh give the same picture. Zero has no bar.
+    function barPercent(v, items) {
+      var pos = items.map(function (i) { return i.value; }).filter(function (x) { return x > 0; });
+      if (!(v > 0) || pos.length === 0) return 0;
+      var max = Math.max.apply(null, pos), min = Math.min.apply(null, pos);
+      if (!state.logScale) return (v / max) * 100;
+      if (max === min) return 100;
+      return ((1 + Math.log10(v / min)) / (1 + Math.log10(max / min))) * 100;
+    }
+
     function renderChart() {
       var items = chartItems();
       var maxVal = Math.max.apply(null, items.map(function (i) { return i.value; }).concat([0.001]));
       var container = $('chart-container');
       container.textContent = '';
-      var anyUnverified = false;
+      var anyUnverified = false, anySliver = false;
       items.forEach(function (item) {
-        var p = state.logScale ? (Math.log10(item.value + 1) / Math.log10(maxVal + 1)) * 100 : (item.value / maxVal) * 100;
+        var p = barPercent(item.value, items);
+        var sliver = item.value > 0 && p < 1.5;
+        if (sliver) anySliver = true;
         var cls = item.type === 'ai' ? 'highlight-ai' : item.type === 'macro' ? 'highlight-macro' : '';
         var row = document.createElement('div');
         var meta = document.createElement('div'); meta.className = 'bar-meta';
@@ -411,13 +434,15 @@
         var v = document.createElement('span'); v.className = 'bar-val'; v.textContent = sig(item.value) + ' ' + item.unit;
         meta.appendChild(l); meta.appendChild(v);
         var track = document.createElement('div'); track.className = 'bar-track'; track.setAttribute('aria-hidden', 'true');
-        var fill = document.createElement('div'); fill.className = 'bar-fill ' + cls; fill.style.width = Math.max(p, 0) + '%';
+        var fill = document.createElement('div'); fill.className = 'bar-fill ' + cls + (sliver ? ' sliver' : ''); fill.style.width = p + '%';
         track.appendChild(fill);
-        var note = document.createElement('div'); note.className = 'bar-note'; note.textContent = item.note;
+        var note = document.createElement('div'); note.className = 'bar-note'; note.textContent = item.note + (sliver ? ' (Drawn as a thin sliver at minimum visible width, a little longer than its true size.)' : '');
         row.appendChild(meta); row.appendChild(track); row.appendChild(note);
         container.appendChild(row);
       });
-      $('tab-what').textContent = state.tab === 'personalWater' ? TAB_WHAT[state.tab].replace('world-average electricity mix', gridLabel()) : TAB_WHAT[state.tab];
+      $('tab-what').textContent = state.tab === 'personalWater'
+        ? 'Compares the greenhouse gases for ' + (ov('burgerCo2Kg') ? 'one burger at your custom carbon figure' : 'making one beef burger') + ' with those from a what-if year of AI prompts at ' + (ov('promptWh') ? 'your custom electricity per prompt' : 'the example rate') + '. The AI figure is a scenario: the ' + (ov('promptWh') ? '' : 'data centre ') + 'electricity multiplied by ' + gridLabel() + '.' + (ov('promptWh') ? '' : ' It is not something Google measured.') + (ov('promptWh') || ov('burgerCo2Kg') ? ' What your custom numbers cover is up to you.' : '')
+        : TAB_WHAT[state.tab];
 
       var positive = state.tab === 'growth' ? [] : items.filter(function (i) { return i.value > 0; });
       var ratio = $('chart-ratio');
@@ -433,12 +458,12 @@
       else if (state.tab === 'growth') { notice.hidden = false; notice.textContent = 'Google says the energy of one typical prompt fell ' + bench.constants.efficiency_gain_factor.value + ' times in a year, while its total electricity still rose 37% in 2025. These are different measures (one prompt versus the whole company), so this does not show that efficiency gains were cancelled out.'; }
       else notice.hidden = true;
 
-      $('log-help').textContent = state.logScale ? 'The scale is squashed. Bar lengths no longer match real sizes, so use the numbers and the sentence above.' : 'Bar lengths match real sizes. A very small value can look like a thin sliver.';
+      $('log-help').textContent = state.logScale ? 'The scale is squashed: each equal extra length means multiplied by the same factor, and the smallest bar is given a short starting length. Bar lengths do not show true ratios, so use the numbers and the sentence above. A zero has no bar.' : 'Bar lengths match real sizes. A zero has no bar' + (anySliver ? ', and a very small value is drawn at a minimum visible width, a little longer than its true size.' : '.');
     }
 
     /* ---------- results ---------- */
     function gridLabel() { return state.overrides.gridCarbonGPerKwh == null ? 'world-average grid' : 'custom grid factor'; }
-    function videoEquivalent(r) { return r.equivalents.streamingHoursForYearAiEnergy === null ? 'Video equivalence unavailable (video electricity is zero).' : 'Electricity equals about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + ' hours of video in the 2019 example, which also counts the viewing device and network.'; }
+    function videoEquivalent(r) { return r.equivalents.streamingHoursForYearAiEnergy === null ? 'Video equivalence unavailable (video electricity is zero).' : 'Electricity equals about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + (ov('streamingWhPerHr') ? ' hours of video at your custom rate.' : ' hours of video in the 2019 example, which also counts the viewing device and network.'); }
     function renderAnswer(r) {
       var burgerC = calc.effectiveConstants(state, bench).burgerCo2Kg;
       var n = state.promptsPerDay;
@@ -447,14 +472,16 @@
         $('answer-list').textContent = '';
         return;
       }
-      $('answer-main').textContent = 'Using ' + (calc.hasOverrides(state) ? 'your custom numbers based on ' : '') + 'the "' + bench.modes[state.mode].short_label + '" example, ' + n + ' AI ' + plural(n, 'question', 'questions') + ' a day comes to about ' + water(r.waterL.ai) + ' of water, ' + energy(r.energyKwh.ai) + ' of electricity and ' + carbon(r.carbonKg.ai) + ' (greenhouse gases) over a year. The greenhouse gas figure is a scenario: that electricity at the ' + gridLabel() + ', not a measurement.';
+      var cf = (ov('promptWh') ? ['electricity'] : []).concat(ov('promptWaterMl') ? ['water'] : []).join(' and ');
+      var src = promptCustom() ? 'your custom ' + cf + ' per prompt and, for the rest, the "' + bench.modes[state.mode].short_label + '" example' : 'the "' + bench.modes[state.mode].short_label + '" per-prompt example';
+      var caveat = ov('promptWh') ? '' : (state.mode === 'modern' ? ' Google\'s number is for a typical (median) prompt, not an average, so real use could be higher or lower.' : ' This older figure is a reported estimate for one product, not a measurement of your use.');
+      $('answer-main').textContent = 'A what-if, not a forecast: ' + n + ' AI ' + plural(n, 'question', 'questions') + ' a day, each using ' + src + ', comes to about ' + water(r.waterL.ai) + ' of water, ' + energy(r.energyKwh.ai) + ' of electricity and ' + carbon(r.carbonKg.ai) + ' (greenhouse gases) over a year.' + caveat + ' The greenhouse gas figure is that electricity at the ' + gridLabel() + ', not a measurement.';
       var ul = $('answer-list'); ul.textContent = '';
       function li(t) { var x = document.createElement('li'); x.textContent = t; ul.appendChild(x); }
-      li((state.overrides.promptWaterMl != null ? 'Water uses your custom rate, interpreted as data centre cooling water' : 'Water: data centre cooling water') + (bench.modes[state.mode].prompt_water_includes_power_plant_water ? ' plus power-plant water' : ' only, not counting power-plant water') + '. It is not compared with burger water because they are different kinds of water.');
+      li((state.overrides.promptWaterMl != null ? 'Water uses your custom rate. This page does not know what it counts (cooling, power-plant water or both), so treat that as your own assumption' : 'Water: data centre cooling water' + (bench.modes[state.mode].prompt_water_includes_power_plant_water ? ' plus power-plant water' : ' only, not counting power-plant water')) + '. It is not compared with burger water because they are different kinds of water.');
       li(videoEquivalent(r));
       var other = state.burgerSystem === 'dairy' ? bench.constants.burger_co2e_kg.value : bench.constants.burger_co2e_dairy_kg.value;
-      if (burgerC > 0) li('Greenhouse gases (scenario): ' + ratioText(r.carbonKg.ai / burgerC, (state.overrides.burgerCo2Kg != null ? 'one burger at your custom factor, based on ' : 'one beef burger from ') + (state.burgerSystem === 'dairy' ? 'dairy herds' : 'beef herds') + ' (' + sig(burgerC) + ' kg CO\u2082e; ' + sig(other) + ' kg for the other kind)') + '.');
-      if ((state.burgersPerWeek > 0 || state.streamingHoursPerDay > 0) && !calc.hasOverrides(state)) li('Counting only the AI, video and burgers on this page, AI is ' + (r.carbonKg.aiSharePct < 0.1 ? 'under 0.1%' : 'about ' + pct(r.carbonKg.aiSharePct)) + ' of the greenhouse gases. The boundaries differ: AI counts data centres only, video also counts your device and network, and beef counts its supply chain. This is not anyone\'s whole footprint.');
+      if (burgerC > 0) li('Greenhouse gases (scenario): ' + (state.overrides.burgerCo2Kg != null ? ratioText(r.carbonKg.ai / burgerC, 'one burger at your custom factor (' + sig(burgerC) + ' kg CO\u2082e; what it covers is up to you)') : ratioText(r.carbonKg.ai / burgerC, 'one beef burger from ' + (state.burgerSystem === 'dairy' ? 'dairy herds' : 'beef herds') + ' (' + sig(burgerC) + ' kg CO\u2082e; ' + sig(other) + ' kg for the other kind)')) + '.');
     }
 
     function renderRange() {
@@ -464,7 +491,7 @@
         var r = calc.computeFootprint(calc.buildInputs(base, bench, k));
         var tr = document.createElement('tr');
         [bench.modes[k].short_label + (k === state.mode ? (calc.hasOverrides(state) ? ' (before custom changes)' : ' (selected)') : ''), waterShort(r.waterL.ai) + (bench.modes[k].prompt_water_includes_power_plant_water ? ' (+ power plants)' : ' (cooling only)'), energy(r.energyKwh.ai), carbon(r.carbonKg.ai)].forEach(function (t, i) {
-          var td = document.createElement(i === 0 ? 'th' : 'td'); if (i === 0) td.scope = 'row'; td.textContent = t; tr.appendChild(td);
+          var td = document.createElement(i === 0 ? 'th' : 'td'); if (i === 0) td.scope = 'row'; else td.setAttribute('data-label', ['', 'Water', 'Energy', 'Carbon'][i]); td.textContent = t; tr.appendChild(td);
         });
         body.appendChild(tr);
       });
@@ -489,14 +516,16 @@
       $('btn-conservative').textContent = bench.modes.conservative.short_label + ' (' + bench.modes.conservative.prompt_wh + ' Wh)';
       $('btn-modern').setAttribute('aria-pressed', String(state.mode === 'modern'));
       $('btn-conservative').setAttribute('aria-pressed', String(state.mode === 'conservative'));
-      $('mode-help').textContent = m.description;
+      $('help-burgers').textContent = ov('burgerCo2Kg') ? 'Used for comparison, at your custom carbon figure per burger.' : 'Used for comparison. Each is 150 g of raw beef.';
+      $('help-beef').textContent = ov('burgerCo2Kg') ? 'Not in use: your custom carbon figure per burger replaces both published figures. Clear that box in section 3 to use them again.' : 'Published studies give very different carbon figures for these two kinds of beef, so we show both instead of averaging them.';
+      $('mode-help').textContent = (promptCustom() ? 'Your custom per-prompt numbers replace the matching published ones below, so what this description says about what is counted may not apply to them. Published example: ' : '') + m.description;
       $('sel-beef').value = state.burgerSystem;
       $('chk-log').checked = state.logScale;
 
       var custom = calc.hasOverrides(state);
       var note = $('custom-note');
       note.hidden = !custom;
-      if (custom) note.textContent = 'You are using some of your own numbers (see section 3), so the results do not match the published defaults. Use "Reset everything to the defaults" in section 3 to go back.';
+      if (custom) note.textContent = 'You are using some of your own numbers (see section 3), so the results do not match the published defaults. This page cannot check what your numbers count (for example cooling water only, or device and network electricity), so the labels and boundaries of the published examples do not apply to them. Use "Reset everything to the defaults" in section 3 to go back.';
 
       var tabs = document.querySelectorAll('.tab-btn');
       Array.prototype.forEach.call(tabs, function (btn) {
@@ -527,28 +556,18 @@
 
       renderAnswer(r);
       $('out-ai-water').textContent = waterShort(r.waterL.ai);
-      $('out-ai-water-sub').textContent = bench.modes[state.mode].prompt_water_includes_power_plant_water ? 'includes power-plant water' : 'cooling only, a lower bound';
+      $('out-ai-water-sub').textContent = ov('promptWaterMl') ? 'your custom rate' : (bench.modes[state.mode].prompt_water_includes_power_plant_water ? 'includes power-plant water' : 'cooling only, not a minimum for other requests');
       $('out-ai-energy').textContent = energy(r.energyKwh.ai);
-      $('out-ai-energy-sub').textContent = (r.equivalents.streamingHoursForYearAiEnergy === null ? 'video equivalence unavailable' : 'about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + ' video hours (2019)');
+      $('out-ai-energy-sub').textContent = (r.equivalents.streamingHoursForYearAiEnergy === null ? 'video equivalence unavailable' : 'about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + ' ' + videoTag());
       $('out-ai-carbon').textContent = carbon(r.carbonKg.ai);
       $('out-ai-carbon-sub').textContent = 'scenario: ' + gridLabel();
-
-      function bars(prefix, x) {
-        $(prefix + '-seg-ai').style.width = x.aiSharePct + '%';
-        if ($(prefix + '-seg-stream')) $(prefix + '-seg-stream').style.width = x.streamingSharePct + '%';
-        $(prefix + '-seg-beef').style.width = x.burgersSharePct + '%';
-      }
-      bars('c', r.carbonKg);
-      function shareText(x) {
-        return 'Unequal boundaries: AI data centre only; video includes device/network; beef supply chain. AI ' + pct(x.aiSharePct) + (x.streamingSharePct !== undefined ? ', video ' + pct(x.streamingSharePct) : '') + ', burgers ' + pct(x.burgersSharePct) + '.';
-      }
-      $('carbon-share-text').textContent = shareText(r.carbonKg);
-      $('stack-carbon').setAttribute('aria-label', 'Shares of this limited scenario. ' + shareText(r.carbonKg));
 
       $('live-formula').textContent =
         'AI water per year = ' + state.promptsPerDay + ' prompts a day \u00d7 365 days \u00d7 ' + r.effectivePerPrompt.waterMl + ' mL' +
         ' = ' + sig(r.waterL.ai) + ' litres.  AI electricity per year = ' + r.annualCounts.prompts.toLocaleString() + ' prompts \u00d7 ' + r.effectivePerPrompt.wh + ' Wh = ' + sig(r.energyKwh.ai) + ' kWh.';
 
+      $('share-why-custom').textContent = $('notcounted-custom').textContent = calc.hasOverrides(state) ? ' With your own numbers, what each one counts is up to you and is not checked here.' : '';
+      $('water-why-custom').textContent = ov('promptWaterMl') ? ' Your custom water number may count something different: this page does not know what it counts.' : '';
       renderRange();
       renderChart();
       syncUrl();
@@ -633,11 +652,27 @@
     }
 
     $('btn-export-json').addEventListener('click', function () {
-      var payload = { exported_at: new Date().toISOString(), scope: exportScope(), benchmarks: bench, scenario: state, inputs_used: calc.buildInputs(state, bench), data_version: bench.schema_version, results: lastResult };
+      var payload = { exported_at: new Date().toISOString(), scope: exportScope(), benchmarks: bench, scenario: state, inputs_used: calc.buildInputs(state, bench), data_version: bench.schema_version, results: exportResults() };
       download('ai-footprint-estimate.json', new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
     });
 
-    function exportScope() { return { ai: 'Operational data-centre inference only. Excludes training, hardware, device and network. Published example, not measurement of your use.', water: bench.modes[state.mode].prompt_water_includes_power_plant_water ? 'Cooling plus power-plant consumption; 10 mL is the low end of the older 10-50 mL estimate.' : 'On-site cooling consumption only; excludes power-plant water.', carbon: 'AI and video electricity multiplied by ' + gridLabel() + '; burger figure covers its supply chain. Boundaries differ.', video: '2019 typical viewing electricity, including device and network. Not like for like with AI.', custom: calc.hasOverrides(state), sources: 'https://github.com/GIL794/ai-footprint-audit' }; }
+    function exportScope() {
+      var pc = ov('promptWh');
+      return {
+        ai: pc ? 'Per-prompt electricity was entered by the user. Its boundary (what it counts) is unknown to this page, and it is not a published measurement. A what-if scenario, not a measurement of any real use.' : 'Operational data-centre inference only. Excludes training, hardware, device and network. Published per-prompt example scaled by the prompts per day chosen: a what-if scenario, not an expected personal total and not a measurement of your use.',
+        water: ov('promptWaterMl') ? 'Water per prompt entered by the user. What it counts (cooling, power plants or both) is unknown to this page.' : (bench.modes[state.mode].prompt_water_includes_power_plant_water ? 'Cooling plus power-plant consumption; 10 mL is the low end of the older rounded 10-50 mL summary, not a minimum across all places.' : 'On-site cooling consumption only; excludes power-plant water. Not a minimum for other requests.'),
+        carbon: 'AI and video electricity multiplied by ' + gridLabel() + '; ' + (ov('burgerCo2Kg') ? 'burger figure entered by the user, boundary unknown to this page' : 'burger figure covers its supply chain') + '. Boundaries differ, so no shares or totals are given.',
+        video: ov('streamingWhPerHr') ? 'Electricity per hour of video entered by the user. What it counts (device, network, data centre) is unknown to this page. The published 2019 estimate was replaced.' : '2019 typical viewing electricity, including device and network. Not like for like with AI.',
+        custom: calc.hasOverrides(state),
+        custom_fields: Object.keys(state.overrides).filter(ov),
+        sources: 'https://github.com/GIL794/ai-footprint-audit'
+      };
+    }
+    function exportResults() {
+      var x = JSON.parse(JSON.stringify(lastResult));
+      ['energyKwh', 'carbonKg'].forEach(function (k) { if (x[k]) ['total', 'aiSharePct', 'streamingSharePct', 'burgersSharePct'].forEach(function (f) { delete x[k][f]; }); });
+      return x;
+    }
     function csvCell(v) { var s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
     $('btn-export-csv').addEventListener('click', function () {
       var r = lastResult;
@@ -646,7 +681,6 @@
         ['AI prompts', r.waterL.ai, r.energyKwh.ai, r.carbonKg.ai],
         ['video streaming', 'not estimated', r.energyKwh.streaming, r.carbonKg.streaming],
         ['Beef burgers', 'not compared', 'not modelled', r.carbonKg.burgers],
-        ['Total (limited scenario, unequal boundaries)', 'not totalled', r.energyKwh.total + ' (AI + video only)', r.carbonKg.total],
         ['Mode', bench.modes[state.mode].short_label],
         ['Inputs used', JSON.stringify(calc.buildInputs(state, bench))],
         ['Scope and caveats', JSON.stringify(exportScope())],
@@ -666,13 +700,13 @@
       ctx.fillStyle = '#0b0f17'; ctx.fillRect(0, 0, 1200, 630);
       ctx.strokeStyle = '#28354d'; ctx.lineWidth = 4; ctx.strokeRect(24, 24, 1152, 582);
       ctx.fillStyle = '#38bdf8';
-      fit('AI FOOTPRINT ESTIMATE  \u2022  ' + m.short_label.toUpperCase() + (custom ? '  \u2022  CUSTOM NUMBERS' : ''), 'bold 22px monospace', 1080, 60, 80);
-      ctx.fillStyle = '#f1f5f9'; fit('What a year of your AI use adds up to', 'bold 42px sans-serif', 1080, 60, 140);
+      fit('AI FOOTPRINT ESTIMATE  \u2022  ' + (custom ? 'CUSTOM NUMBERS, STARTING FROM ' : '') + m.short_label.toUpperCase(), 'bold 22px monospace', 1080, 60, 80);
+      ctx.fillStyle = '#f1f5f9'; fit(ov('promptWh') ? 'What-if: a year of AI prompts at your numbers' : 'What-if: a year of AI prompts at the example rate', 'bold 42px sans-serif', 1080, 60, 140);
       ctx.fillStyle = '#a3b1c6';
       fit(state.promptsPerDay + ' AI questions a day  \u2022  compared with ' + state.burgersPerWeek + ' burgers a week and ' + state.streamingHoursPerDay + ' hours of video a day', '24px sans-serif', 1080, 60, 190);
       var cards = [
-        { title: 'WATER PER YEAR', val: waterShort(r.waterL.ai), sub: m.prompt_water_includes_power_plant_water ? 'includes power-plant water' : 'cooling only, lower bound', x: 60 },
-        { title: 'ELECTRICITY PER YEAR', val: energy(r.energyKwh.ai), sub: (r.equivalents.streamingHoursForYearAiEnergy === null ? 'video equivalence unavailable' : 'about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + ' video hours (2019)'), x: 430 },
+        { title: 'WATER PER YEAR', val: waterShort(r.waterL.ai), sub: ov('promptWaterMl') ? 'your custom rate' : (m.prompt_water_includes_power_plant_water ? 'includes power-plant water' : 'cooling only, not a minimum'), x: 60 },
+        { title: 'ELECTRICITY PER YEAR', val: energy(r.energyKwh.ai), sub: (r.equivalents.streamingHoursForYearAiEnergy === null ? 'video equivalence unavailable' : 'about ' + sig(r.equivalents.streamingHoursForYearAiEnergy) + ' ' + videoTag()), x: 430 },
         { title: 'GREENHOUSE GASES (SCENARIO)', val: carbon(r.carbonKg.ai), sub: 'scenario: ' + gridLabel(), x: 800 }
       ];
       cards.forEach(function (c) {
@@ -683,8 +717,8 @@
         ctx.fillStyle = '#f1f5f9'; fit(c.sub, '20px sans-serif', 300, c.x + 24, 395);
       });
       ctx.fillStyle = '#a3b1c6';
-      fit('Per prompt: ' + e.promptWh + ' Wh, ' + e.promptWaterMl + ' mL' + (m.prompt_water_includes_power_plant_water ? ' (incl. power-plant water)' : ' (cooling only)') + '. Grid ' + e.gridCarbonGPerKwh + ' g CO\u2082e/kWh. Estimates, not measurements.', '20px sans-serif', 1080, 60, 490);
-      ctx.fillStyle = '#38bdf8'; fit('AI excludes training/hardware/device/network. Video includes device/network (2019).', '18px sans-serif', 1080, 60, 525);
+      fit('Per prompt: ' + e.promptWh + ' Wh' + (ov('promptWh') ? ' (custom)' : '') + ', ' + e.promptWaterMl + ' mL' + (ov('promptWaterMl') ? ' (custom)' : '') + (ov('promptWaterMl') ? '' : (m.prompt_water_includes_power_plant_water ? ' (incl. power-plant water)' : ' (cooling only)')) + '. Grid ' + e.gridCarbonGPerKwh + ' g CO\u2082e/kWh. What-if estimates, not measurements.', '20px sans-serif', 1080, 60, 490);
+      ctx.fillStyle = '#38bdf8'; fit(custom ? 'Custom values: what they cover is set by you and not checked here. Published defaults: AI excludes training/hardware/device/network; video (2019) includes device/network.' : 'AI excludes training/hardware/device/network. Video includes device/network (2019).', '18px sans-serif', 1080, 60, 525);
       fit('Sources: github.com/GIL794/ai-footprint-audit', '20px monospace', 1080, 60, 560);
       canvas.toBlob(function (blob) { if (blob) download('ai-footprint-estimate.png', blob); }, 'image/png');
     });

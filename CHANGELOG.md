@@ -1,3 +1,16 @@
+## Second accuracy review fixes, 23 November 2026
+- Custom numbers no longer keep published labels: charts, answer, cards, PNG, CSV and JSON now say when a prompt, water, video or burger value is the user's own.
+- Custom values no longer inherit published boundaries (cooling only, device and network, raw beef, data-centre only): pages, PNG, CSV and JSON say what a custom number covers is unknown to the page and set by the user.
+- Zero values draw no bar. Very small positive values keep a 4 px minimum and the page says so.
+- The squashed scale is now a true logarithmic scale (length = 1 + log10(value / smallest positive value)), independent of units. Glossary rewritten to match.
+- Annual results are labelled a what-if scenario, not an expected personal total. The answer says Google's figure is a median prompt.
+- Removed the stacked carbon share bar, the AI share percentage and the total rows in exports: the parts use different boundaries.
+- Growth tab renamed and reworded so it no longer asks a causal question it cannot answer.
+- Water: "lower bound" replaced by "cooling only, not a minimum". Older 10 mL is described as the low end of a rounded summary, and the source table has lower local values. Grid note states what Ember's figure covers.
+- Method note for the Google figures (median across model averages, water derived from energy and fleet water-use rate, company-authored and not independently verified). Per-field custom wording (only water custom keeps the median caveat for default electricity). Zero-ratio answer sentence completed. Estimate table stacks on phones.
+- Burger-tab intro now follows each custom field separately (prompt electricity, burger). Added tests/browser/matrix.mjs, which checks every single override and key pairs in both modes. Older-water source paragraph states the 10 mL is the low end of a rounded summary, not a minimum.
+- Added rendered-pixel checks (tests/browser/rendered.mjs). Schema version 1.3.2.
+
 ## Accuracy re-review, 23 November 2026
 - Version script URLs to prevent the old cached ES-module calculator breaking the new classic-script page after deployment.
 - Rechecked primary sources for Gemini, older ChatGPT energy/water, Ember grid, Google electricity, IEA data centres/video, Google search and beef factors.
